@@ -7,8 +7,6 @@
 
 Set the room how you want it — adjust each lamp, pick the right color temperature, get the brightness just right — then tap a button. Scene Capture writes the snapshot to `scenes.yaml` (with a stable id, so it shows up in the UI scene editor) and reloads scenes immediately. No restart, no clicking through each light by hand in the editor.
 
-> Replace `derwoodums` throughout this repo with your actual GitHub handle before publishing. Search for it in `manifest.json`, `info.md`, and the blueprint.
-
 ## Why this exists
 
 Home Assistant's built-in scene editor works, but capturing "the room exactly as it is right now" means walking through every light and re-entering its current values. That's tedious for a single scene, painful for twenty rooms, and impossible for the spouse / kids / houseguests you'd actually like to be able to save scenes too.
