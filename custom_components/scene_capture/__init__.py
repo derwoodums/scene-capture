@@ -119,40 +119,56 @@ def _capture_light_state(state) -> dict[str, Any]:
     return entry
 
 
-def _expand_legacy_light_group(hass: HomeAssistant, entity_id: str) -> list[str]:
-    """Expand a light group entity into its child light entities."""
-    group_state = hass.states.get(entity_id)
-    if not group_state:
-        return []
-    children = group_state.attributes.get("entity_id") or []
-    return [c for c in children if isinstance(c, str)]
-
-
 async def _resolve_targets(hass: HomeAssistant, call: ServiceCall) -> list[str]:
-    """Resolve the call into a sorted list of light entity IDs.
+    """Resolve the call into a sorted list of leaf light entity IDs.
 
     Supports modern target syntax (areas, devices, labels, entities) and the
     legacy ``light_group`` data field used by earlier versions of the blueprint.
+    Any ``light.*`` entity that is itself a light group (its state exposes an
+    ``entity_id`` attribute listing child lights) is expanded recursively so
+    we capture the individual bulbs, not the aggregate group state.
     """
     selected = async_extract_referenced_entity_ids(hass, call, expand_group=True)
-    all_ids: set[str] = set(selected.referenced) | set(selected.indirectly_referenced)
+    candidates: set[str] = set(selected.referenced) | set(selected.indirectly_referenced)
 
     # Legacy: a single light group entity passed as data.
     legacy_group = call.data.get(CONF_LIGHT_GROUP)
     if legacy_group:
-        all_ids.add(legacy_group)
-        all_ids.update(_expand_legacy_light_group(hass, legacy_group))
+        candidates.add(legacy_group)
 
-    # Legacy: bare entity_id list in data (rare, but cheap to support).
+    # Legacy: bare entity_id list/string in data.
     extra = call.data.get(ATTR_ENTITY_ID)
     if isinstance(extra, str):
-        all_ids.add(extra)
+        candidates.add(extra)
     elif isinstance(extra, list):
-        all_ids.update(extra)
+        candidates.update(extra)
 
-    # Filter to lights only; users shouldn't be able to accidentally drop a
-    # switch into scenes.yaml via this service.
-    return sorted(e for e in all_ids if isinstance(e, str) and e.startswith("light."))
+    # Iteratively expand light groups down to leaf bulbs. A light is treated
+    # as a group when its state attributes include a non-empty ``entity_id``
+    # list (the convention used by HA's Light Group helper).
+    leaves: set[str] = set()
+    seen: set[str] = set()
+    queue: list[str] = [e for e in candidates if isinstance(e, str)]
+    while queue:
+        eid = queue.pop()
+        if eid in seen:
+            continue
+        seen.add(eid)
+        # Drop anything that isn't a light — guards against an area target
+        # that includes switches or other entities alongside the lights.
+        if not eid.startswith("light."):
+            continue
+        state = hass.states.get(eid)
+        members = state.attributes.get("entity_id") if state else None
+        if members:
+            # Light group: queue its children, don't capture the group itself.
+            for m in members:
+                if isinstance(m, str):
+                    queue.append(m)
+        else:
+            leaves.add(eid)
+
+    return sorted(leaves)
 
 
 async def _notify(

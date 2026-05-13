@@ -1,7 +1,7 @@
 {
   "domain": "scene_capture",
   "name": "Scene Capture",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "documentation": "https://github.com/derwoodums/scene-capture",
   "issue_tracker": "https://github.com/derwoodums/scene-capture/issues",
   "codeowners": ["@derwoodums"],
