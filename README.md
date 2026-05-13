@@ -1,7 +1,7 @@
 # Scene Capture
 
 <p align="center">
-  <img src="icons/icon.png" width="128" alt="Scene Capture icon">
+  <img src="custom_components/scene_capture/brand/icon.png" width="128" alt="Scene Capture icon">
 </p>
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://github.com/hacs/integration)
