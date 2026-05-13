@@ -1,0 +1,29 @@
+capture:
+  name: Capture scene
+  description: >
+    Snapshot the current state of the targeted lights into a named scene.
+    The scene is written to scenes.yaml and scene.reload is called automatically,
+    so the captured scene is immediately available. Re-running with the same
+    name overwrites the previous capture (the scene id is derived from the name).
+  fields:
+    scene_name:
+      name: Scene name
+      description: >
+        Display name for the scene (e.g. "Evening Dim"). Re-using a name
+        overwrites the previous capture.
+      required: true
+      example: Evening Dim
+      selector:
+        text:
+    exclude_lights:
+      name: Exclude lights
+      description: Lights inside the target to leave out of the snapshot.
+      required: false
+      example: "[light.bedroom_lamp]"
+      selector:
+        entity:
+          multiple: true
+          domain: light
+  target:
+    entity:
+      domain: light

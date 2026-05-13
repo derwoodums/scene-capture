@@ -1,0 +1,53 @@
+blueprint:
+  name: Capture Room Scene
+  description: >
+    Snapshot the current state of a room's lights into a named scene.
+    The scene is written to scenes.yaml with a stable id derived from the
+    name, so it can be edited and deleted from the UI. Re-using the same
+    name overwrites the previous capture. Optionally exclude specific
+    lights from the snapshot.
+
+
+    Requires the Scene Capture custom component to be installed
+    (https://github.com/derwoodums/scene-capture).
+  domain: script
+  source_url: https://github.com/derwoodums/scene-capture/blob/main/blueprints/script/capture_room_scene.yaml
+  input:
+    lights_target:
+      name: Lights
+      description: >
+        The area, light group, or individual lights to capture.
+        Pick whichever is most natural for the room.
+      selector:
+        target:
+          entity:
+            domain: light
+
+fields:
+  scene_name:
+    name: Scene name
+    description: >
+      Name for the scene (e.g. "Evening dim"). Overwrites any existing
+      scene with the same name.
+    required: true
+    selector:
+      text:
+  exclude_lights:
+    name: Exclude lights (optional)
+    description: Any lights in the target to leave out of the snapshot.
+    required: false
+    selector:
+      entity:
+        multiple: true
+        domain: light
+
+sequence:
+  - action: scene_capture.capture
+    target: !input lights_target
+    data:
+      scene_name: "{{ scene_name }}"
+      exclude_lights: >-
+        {{ exclude_lights if exclude_lights is defined and exclude_lights != None else [] }}
+
+mode: single
+icon: mdi:palette

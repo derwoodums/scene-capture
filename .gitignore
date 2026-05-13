@@ -1,0 +1,23 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Home Assistant artifacts (in case someone clones into a live HA config)
+home-assistant.log
+home-assistant_v2.db
+.storage/
+secrets.yaml
