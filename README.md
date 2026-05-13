@@ -75,19 +75,42 @@ data:
 
 ### Optional: dashboard cards
 
-Drop one card per room into a dashboard section. Tap the card → the script runs → a notification confirms the scene was saved.
+The most polished pattern is a single `input_text` helper for the scene name, plus one button card per room. You type the name once, tap any room, and the capture fires — no dialog, no notification, the name stays put for the next tap.
+
+First, create the helper: **Settings → Devices & services → Helpers → Create helper → Text** with name "Scene capture name". This gives you `input_text.scene_capture_name`.
+
+Then drop this into your dashboard (one section, all rooms inside):
 
 ```yaml
-type: custom:mushroom-template-card
-entity: script.capture_great_room_scene
-primary: Great Room
-secondary: ""
-icon: mdi:palette
-tap_action:
-  action: more-info
+type: vertical-stack
+cards:
+  - type: entities
+    title: Scene capture
+    entities:
+      - entity: input_text.scene_capture_name
+        name: Scene name
+        icon: mdi:format-text
+    show_header_toggle: false
+
+  - type: grid
+    columns: 4
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        primary: Great Room
+        icon: mdi:palette
+        icon_color: amber
+        tap_action:
+          action: call-service
+          service: script.capture_great_room_scene
+          data:
+            scene_name: "{{ states('input_text.scene_capture_name') }}"
+      # …one entry per room, same shape, swap primary + service
 ```
 
-(Requires [Mushroom cards](https://github.com/piitaya/lovelace-mushroom). Any card type works — this is just an example.)
+(Requires [Mushroom cards](https://github.com/piitaya/lovelace-mushroom) for the button look. Any card type that supports `tap_action: call-service` works just as well.)
+
+If you'd rather keep the per-room more-info dialog flow, swap `tap_action` for `action: more-info` and point `entity: script.capture_<room>_scene` — HA will pop the script dialog with the `scene_name` field.
 
 ## What gets captured
 
@@ -132,6 +155,9 @@ Only if a UI-created scene happens to have an id starting with `captured_` and m
 
 **Can I edit a captured scene afterward?**
 Yes — captures are normal scene entries with stable ids, fully editable from the UI scene editor.
+
+**Does it notify on every capture?**
+Successes are silent — the scene is immediately usable, so a toast on every tap is noise. Failures still notify (file write errors, no lights matched the target, etc.) so you know when something needs attention. Successful captures are logged at info level.
 
 **What if `scene.reload` fails?**
 You'll get a persistent notification telling you so. The scene is already in `scenes.yaml` at that point — restart HA or call `scene.reload` manually to pick it up.

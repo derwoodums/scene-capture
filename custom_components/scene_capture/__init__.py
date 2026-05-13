@@ -300,11 +300,13 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
                 )
                 return
 
-        await _notify(
-            hass,
-            "Scene Saved",
-            f"'{scene_name}' has been saved and is ready to use.",
-            "scene_capture",
+        # Success is silent — the scene is immediately usable and a toast on
+        # every tap is noisy. Failures still notify so the user knows when
+        # something needs attention.
+        _LOGGER.info(
+            "scene_capture: captured %d light(s) into scene '%s'",
+            len(entities_data),
+            scene_name,
         )
 
     hass.services.async_register(
