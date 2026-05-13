@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- Camera/capture viewfinder brackets -->
+  <g fill="none" stroke="#03A9F4" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M 56 92 L 56 56 L 92 56"/>
+    <path d="M 164 56 L 200 56 L 200 92"/>
+    <path d="M 56 164 L 56 200 L 92 200"/>
+    <path d="M 164 200 L 200 200 L 200 164"/>
+  </g>
+
+  <!-- Lightbulb body -->
+  <path d="M 128 80
+           C 98 80, 78 102, 78 130
+           C 78 150, 90 165, 100 175
+           C 105 180, 108 185, 108 192
+           L 148 192
+           C 148 185, 151 180, 156 175
+           C 166 165, 178 150, 178 130
+           C 178 102, 158 80, 128 80 Z"
+        fill="#FFC107"/>
+
+  <!-- Bulb screw base -->
+  <rect x="108" y="194" width="40" height="9" rx="2" fill="#616161"/>
+  <rect x="111" y="205" width="34" height="7" rx="2" fill="#616161"/>
+  <path d="M 116 214 L 140 214 L 134 222 L 122 222 Z" fill="#424242"/>
+
+  <!-- Filament -->
+  <g fill="none" stroke="#FF9800" stroke-width="4" stroke-linecap="round">
+    <path d="M 116 135 Q 122 145 128 135 Q 134 145 140 135"/>
+    <path d="M 116 135 L 116 150"/>
+    <path d="M 140 135 L 140 150"/>
+  </g>
+
+  <!-- Capture sparkle (top right of viewfinder) -->
+  <g fill="#FFEB3B">
+    <circle cx="200" cy="56" r="9"/>
+  </g>
+</svg>
